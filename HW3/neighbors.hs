@@ -1,5 +1,7 @@
 -- 3. neighbors of an element in a 2D array
 
+-- array assumed to be of size 10 by 10 and indexed from 0
+
 neighbors :: (Ord a1, Num a1, Ord a2, Num a2) => a1 -> a2 -> [(a1, a2)]
 
 neighbors a1 a2 = quicksort (
