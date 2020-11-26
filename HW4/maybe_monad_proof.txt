@@ -1,0 +1,58 @@
+Monad functions are described for the Maybe monad as follows,
+    (i)
+        return :: a -> Maybe a
+        return x = Just x
+    (ii)
+        (>>=) :: Maybe a -> (a -> Maybe b) -> Maybe b
+        m >>= f = case m of
+                        Just x  -> f x
+                        Nothing -> Nothing
+
+Now we will prove that, Maybe follows the 3 given monad laws.
+
+1. Left identity: (return a >>= f) = (f a)
+Proof:
+    LHS = return a >>= f
+        = Just a >>= f      {by definition of return}
+        = f a               {by definition of >>=}
+        = RHS
+    Hence proved.
+
+2. Right identity: (m >>= return) = (m)
+Proof:
+    (i) m = Nothing,
+        LHS = m >>= return
+            = Nothing >>= return
+            = Nothing               {by definition of >>=}
+            = m
+            = RHS
+    (ii) m = Just a,
+        LHS = m >>= return
+            = Just a >>= return
+            = return a              {by definition of >>=}
+            = Just a                {by definition of return}
+            = m
+            = RHS
+    Hence proved.
+
+3. Associativity: ((m >>= f) >>= g) = (m >>= (\x -> f x >>= g))
+Proof:
+    (i) m = Nothing,
+        LHS = (m >>= f) >>= g
+            = (Nothing >>= f) >>= g
+            = Nothing >>= g                     {by definition of >>=}
+            = Nothing                           {by definition of >>=}
+        RHS = m >>= (\x -> f x >>= g)
+            = Nothing >>= (\x -> f x >>= g)
+            = Nothing                           {by definition of >>=}
+        LHS = RHS
+    (ii) m = Just a,
+        LHS = (m >>= f) >>= g
+            = (Just a >>= f) >>= g
+            = (f a) >>= g                       {by definition of >>=}
+        RHS = m >>= (\x -> f x >>= g)
+            = Just a >>= (\x -> f x >>= g)
+            = (\x -> f x >>= g) a               {by definition of >>=}
+            = (f a) >>= g                       {by beta reduction}
+        LHS = RHS
+    Hence proved.

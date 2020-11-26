@@ -1,0 +1,99 @@
+Monad functions are described for the List monad as follows,
+    (i)
+        return :: a -> [a]
+        return x = [x]
+    (ii)
+        (>>=) :: [a] -> (a -> [b]) -> [b]
+        m >>= f = concat (fmap f m)
+
+concat is defined as follows,
+    concat [] = []
+    concat (x : xs) = x ++ (concat xs)
+
+fmap is defined as follows,
+    fmap f [] = []
+    fmap f (x : xs) = (f x) : (fmap f xs)
+
+(++) is implemented as follows,
+    _ ++ ys = ys
+    (x : xs) ++ ys = x : (xs ++ ys)
+
+We will be using the following well known identities,
+(1) (concat a) ++ (concat b) = concat (a ++ b)
+(2) fmap f (x ++ y) = (fmap f x) ++ (fmap f y)
+These are intuitive and easily observable from the definitions of fmap, concat and (++).
+
+Now we will prove that, List follows the 3 given monad laws.
+
+1. Left identity: (return a >>= f) = (f a)
+Proof:
+    LHS = return a >>= f
+        = [a] >>= f                     {by definition of return}
+        = concat (fmap f [a])           {by definition of >>=}
+        = concat [f a]                  {by definition of fmap}
+        = f a                           {by definition of concat}
+        = RHS
+    Hence proved.
+
+2. Right identity: (m >>= return) = (m)
+Proof: Induction on length of list m,
+    (i) Base case: m = [],
+        LHS = m >>= return
+            = [] >>= return
+            = concat (fmap return [])           {by definition of >>=}
+            = concat []                         {by definition of fmap}
+            = []                                {by definition of concat}
+            = m
+            = RHS
+    (ii) Inductive step: m = (x : xs),
+        LHS = m >>= return
+            = (x : xs) >>= return
+            = concat (fmap return (x : xs))                 {by definition of >>=}
+            = concat (return x : fmap return xs)            {by definition of fmap}
+            = (return x) ++ (concat (fmap return xs))       {by definition of concat}
+            = (return x) ++ (xs >>= return)                 {by definition of >>=}
+            = (return x) ++ xs                              {by inductive hypothesis}
+            = [x] ++ xs                                     {by definition of return}
+            = (x : xs)                                      {by definition of ++}
+            = m
+            = RHS
+    Hence proved.
+
+3. Associativity: ((m >>= f) >>= g) = (m >>= (\x -> f x >>= g))
+Proof: Induction on length of list m,
+    (i) Base case: m = [],
+        LHS = (m >>= f) >>= g
+            = ([] >>= f) >>= g
+            = concat (fmap f [])                                                {by definition of >>=}
+            = concat []                                                         {by definition of fmap}
+            = []                                                                {by definition of concat}
+        RHS = m >>= (\x -> f x >>= g)
+            = [] >>= (\x -> f x >>= g)
+            = concat (fmap (\x -> f x >>= g) [])                                {by definition of >>=}
+            = concat []                                                         {by definition of fmap}
+            = []                                                                {by definition of concat}
+        LHS = RHS
+    (ii) Inductive step: m = (x : xs),
+        LHS = (m >>= f) >>= g
+            = ((x : xs) >>= f) >>= g
+            = (concat (fmap f (x : xs))) >>= g                                  {by definition of >>=}
+            = (concat (f x : fmap f xs)) >>= g                                  {by definition of fmap}
+            = ((f x) ++ (concat (fmap f xs))) >>= g                             {by definition of concat}
+            = concat (fmap g ((f x) ++ (concat (fmap f xs))))                   {by definition of >>=}
+            = concat ((fmap g (f x)) ++ (fmap g (concat (fmap f xs))))          {by identity (2)}
+            = (concat (fmap g (f x))) ++ (concat (fmap g (concat (fmap f xs)))) {by identity (1)}
+            = (concat (fmap g (f x))) ++ ((concat (fmap f xs)) >>= g)           {by definition of >>=}
+            = (concat (fmap g (f x))) ++ ((xs >>= f) >>= g)                     {by definition of >>=}
+            = (concat (fmap g (f x))) ++ (xs >>= (\x -> f x >>= g))             {by inductive hypothesis}
+            = (concat (fmap g (f x))) ++ (concat (fmap (\x -> f x >>= g) xs))   {by definition of >>=}
+            = concat ((fmap g (f x)) ++ (fmap (\x -> f x >>= g) xs))            {by identity (1)}
+        RHS = m >>= (\x -> f x >>= g)
+            = (x : xs) >>= (\x -> f x >>= g)
+            = concat (fmap (\x -> f x >>= g) (x : xs))                          {by definition of >>=}
+            = concat (((\x -> f x >>= g) x) : (fmap (\x -> f x >>= g) xs))      {by definition of fmap}
+            = concat ((f x >>= g) : (fmap (\x -> f x >>= g) xs))                {by beta reduction}
+            = concat ((concat (fmap g (f x))) : (fmap (\x -> f x >>= g) xs))    {by definition of >>=}
+            = (concat (fmap g (f x))) ++ (concat (fmap (\x -> f x >>= g) xs))   {by definition of concat}
+            = concat ((fmap g (f x)) ++ (fmap (\x -> f x >>= g) xs))            {by identity (1)}
+        LHS = RHS
+    Hence proved.
