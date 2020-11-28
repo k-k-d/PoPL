@@ -6,6 +6,7 @@ declare Count
 
 declare RetrieveFromSAS BindRefToKeyInSAS BindValueToKeyInSAS
 
+% Find Head of a Union-Find Datastucture
 declare FindHead
 fun {FindHead X}
     local XVal in
@@ -20,6 +21,7 @@ fun {FindHead X}
     end
 end
 
+% Retrieve Value from SAS given Identifier name
 fun {RetrieveFromSAS X}
     local Val in
         {Dictionary.get SAS X Val}
@@ -27,6 +29,7 @@ fun {RetrieveFromSAS X}
     end
 end
 
+% Union of different Keys to club them into a single Equivalence Class
 proc {BindRefToKeyInSAS X Y}
     local XH YH in
         {Browse XH}
@@ -43,20 +46,21 @@ proc {BindRefToKeyInSAS X Y}
             case YH
             of equivalence(YVal) then {Dictionary.put SAS YVal XH}
             else
-                if XH \= YH then {Browse 'Error binding var-to-var'}
+                if XH \= YH then {Browse 'Error binding var-to-var.'}
                 end
             end
         end
     end
 end
 
+% Assign a Value to the Head of an Equivalence Class
 proc {BindValueToKeyInSAS X Val}
     local XH in
         XH = {FindHead X}
         case XH
         of equivalence(XVal) then {Dictionary.put SAS XVal Val}
         else
-            if Val \= XH then {Browse 'Error binding var-to-val'}
+            if Val \= XH then {Browse 'Failure binding var-to-val.'}
             end
         end
     end
