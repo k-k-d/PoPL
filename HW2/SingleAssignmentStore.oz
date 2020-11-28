@@ -34,8 +34,6 @@ end
 % Union of different Keys to club them into a single Equivalence Class
 proc {BindRefToKeyInSAS X Y}
     local XH YH in
-        {Browse XH}
-        {Browse YH}
         XH = {FindHead X}
         YH = {FindHead Y}
         case XH

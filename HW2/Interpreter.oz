@@ -171,20 +171,21 @@ fun {Interpreter Program}
 end
 
 % Test cases
-% declare Res
-% Res = {Interpreter 
-% [[var ident(y) [[nop] [var ident(x) 
-%     [[var ident(x1) 
-%         [[var ident(x2) 
-%             [
-%                 [bind ident(y) literal(n)]
-%                 [bind ident(x) [record literal(recLabel) [[ident(y) ident(x1)] [literal(f2) ident(x2)]]]]
-%                 [match ident(x) [record literal(recLabel) [[literal(n) ident(x10)] [literal(f2) ident(x20)]]] [var ident(pass) [nop]] [nop]]
-%             ]
-%         ]]
-%     ]]
-% ]]]]}
-% {Browse Res}
+declare Res
+Res = {Interpreter 
+[[var ident(y) [[nop] [var ident(x) 
+    [[var ident(x1) 
+        [[var ident(x2) 
+            [
+                [bind ident(y) literal(n)]
+                [bind ident(x) [record literal(recLabel) [[ident(y) ident(x1)] [literal(f2) ident(x2)]]]]
+                [bind ident(x1) literal(m)]
+                [match ident(x) [record literal(recLabel) [[literal(n) ident(x10)] [literal(f2) ident(x20)]]] [var ident(pass) [bind ident(x2) ident(pass)]] [bind ident(x2) literal(o)]]
+            ]
+        ]]
+    ]]
+]]]]}
+{Browse Res}
 % declare Res2
 % Res2 = {Interpreter [[var ident(z) [bind ident(z) [record literal(rec) [[literal(f1) literal(v1)] [literal(f2) literal(v2)]]]]]]}
 % {Browse Res2}
