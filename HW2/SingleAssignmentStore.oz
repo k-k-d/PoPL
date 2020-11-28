@@ -1,6 +1,8 @@
+% Dictionary to implement SAS
 declare SAS
 SAS = {Dictionary.new}
 
+% Cell used to index stuff in the SAS
 declare Count
 {NewCell 0 ?Count}
 

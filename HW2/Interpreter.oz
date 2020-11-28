@@ -113,27 +113,52 @@ proc {MatchSucceeds X P E ENew MatchBool}
     end
 end
 
+% declare UpdateCE
+% proc {UpdateCE X LX CE CEInit}
+%     if {Member X LX} then skip
+%     else {AdjoinAt CEInit X  CE}
+%     end
+% end
+
+% declare FindContext
+% proc {FindContext S LX CE CEInit}
+%     loc CELoc in
+%     case S
+%     of nil then skip
+%     [] H | T then
+%         case H
+%         of nil then {FindContext T LX CE CEInit}
+%         [] ident(X) | T then {UpdateCE X LX CE CEInit} CELoc = CE {FindContext T LX CE CELoc}
+%         [] [H] | T then {FindContext T LX CE} {FindContext T LX CE}
+%         [] H | nil then {FindContext H LX CE}
+%         else
+%         end
+    
+
+    
+
 % Recursive function to process the Semantic Stack
 declare Interpret
 fun {Interpret Stack}
-    local ENew MatchBool in
+    local ENew MatchBool CE in
     case Stack 
         of nil then local Ans in {Dictionary.toRecord kkd SAS Ans} {Browse Ans} end nil
         [] (pair(stmt: S env: E)) | StackT then
             case S
                 of nil then {Interpret StackT}
-                [] [nop] | T then {Interpret (pair(stmt: T env: E)) | StackT}       % Question 1
+                [] [nop] | T then {Interpret (pair(stmt: T env: E)) | StackT}
                 [] [var ident(X) S] | T then {Interpret (pair(stmt: [S] env: {CreateVar E X})) | (pair(stmt: T env: E)) | StackT}
                 [] [bind ident(X) ident(Y)] | T then {Unify ident(X) ident(Y) E} {Interpret (pair(stmt: T env: E)) | StackT}
                 [] [bind ident(X) literal(N)] | T then {Unify ident(X) literal(N) E} {Interpret (pair(stmt: T env: E)) | StackT}
                 [] [bind ident(X) [record literal(A) L]] | T then {Unify ident(X) [record literal(A) L] E} {Interpret (pair(stmt: T env: E)) | StackT}
-                [] [match ident(X) P S1 S2] | T then 
+                % [] [bind ident(X) [proce LX S]] | T then {Unify ident(X) [record literal(procedure) [[literal(args) LX] [literal(st) S] [literal(context) E]]] E} {Interpret (pair(stmt: T env: E)) | StackT}
+                [] [match ident(X) P S1 S2] | T then
                     {MatchSucceeds X P E ENew MatchBool}
                     if MatchBool then {Interpret (pair(stmt: [S1] env: ENew)) | (pair(stmt: T env: E)) | StackT}
                     else {Interpret (pair(stmt: [S2] env: E)) | (pair(stmt: T env: E)) | StackT}
                     end
                 [] H | nil then {Interpret (pair(stmt: H env: E)) | StackT}
-                else {Browse "Error in structure of input program."} nil
+                else {Browse 'Error in structure of input program.'} nil
             end
     end
     end
@@ -146,21 +171,20 @@ fun {Interpreter Program}
 end
 
 % Test cases
-declare Res
-Res = {Interpreter 
-[[var ident(y) [[nop] [var ident(x) 
-    [[var ident(x1) 
-        [[var ident(x2) 
-            [
-                [bind ident(y) literal(n)]
-                [bind ident(x) [record literal(recLabel) [[ident(y) ident(x1)] [literal(f2) ident(x2)]]]]
-                [match ident(x) [record literal(recLabel) [[literal(n) ident(x10)] [literal(f2) ident(x20)]]] [var ident(pass) [nop]] [nop]]
-            ]
-        ]]
-    ]]
-]]]]}
-{Browse Res}
-
+% declare Res
+% Res = {Interpreter 
+% [[var ident(y) [[nop] [var ident(x) 
+%     [[var ident(x1) 
+%         [[var ident(x2) 
+%             [
+%                 [bind ident(y) literal(n)]
+%                 [bind ident(x) [record literal(recLabel) [[ident(y) ident(x1)] [literal(f2) ident(x2)]]]]
+%                 [match ident(x) [record literal(recLabel) [[literal(n) ident(x10)] [literal(f2) ident(x20)]]] [var ident(pass) [nop]] [nop]]
+%             ]
+%         ]]
+%     ]]
+% ]]]]}
+% {Browse Res}
 % declare Res2
 % Res2 = {Interpreter [[var ident(z) [bind ident(z) [record literal(rec) [[literal(f1) literal(v1)] [literal(f2) literal(v2)]]]]]]}
 % {Browse Res2}
