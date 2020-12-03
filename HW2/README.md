@@ -1,5 +1,7 @@
 # HW2 - Declarative Sequential Interpreter written in Oz  
 
+(Note: This has been done as an individual project)  
+
 Overview of the implementation of the interpreter:  
 1. The program, when fed into the Interpreter function is wrapped into a semantic stack and the Interpret function recursively operates on this stack till it becomes empty.  
 2. The SAS is implemented with a dictionary and is roughly maintained as a union-find datastructure. Also, a cell is used to maintain indexing in the dictionary (SAS).  
